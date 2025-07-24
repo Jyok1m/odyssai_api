@@ -1,4 +1,3 @@
-import os
 import sounddevice as sd
 import numpy as np
 from pathlib import Path
@@ -24,7 +23,7 @@ class Recorder:
         """
         Callback function to process audio input.
         """
-        self.__recording.append(indata.copy())  # Copy to avoid overwriting
+        self.__recording.append(indata.copy())
 
     def start(self):
         """
