@@ -1,2 +1,2 @@
 from .query_pipeline import query_pipeline
-from .setup_pipeline import setup_pipeline
+from .lore_pipeline import lore_pipeline

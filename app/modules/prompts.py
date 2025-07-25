@@ -8,7 +8,7 @@ from uuid import uuid4
 load_dotenv(find_dotenv())
 
 class PromptManager:
-    def __init__(self, llm_model="gpt-4o", temperature=0.7, streaming=False):
+    def __init__(self, llm_model="gpt-4o-mini", temperature=0.7, streaming=False):
         if not os.getenv("OPENAI_API_KEY"):
             raise EnvironmentError("Missing OPENAI_API_KEY environment variable.")
 
@@ -20,16 +20,19 @@ class PromptManager:
         )
         self.__lore_schema = "app/db/schemas/lore_schema.json"
 
-    def initiate_lore(self, world_id: str, world_name: str, n: int, lang="English"):
+    def initiate_lore(self, world_id: str, world_name: str, n: int, pre_existing_context: str, lang="English"):
         schema = Path(self.__lore_schema).read_text(encoding="utf-8")
         formatted_schema = schema.replace("{", "{{").replace("}", "}}")
         template = (
             f"""
             You are a narrative generator for a procedural RPG game.
             Your task is to generate {{n}} lore entries for the world "{{world_name}}".
+
+            Here are pre-existing contexts that have been already generated. Take them into consideration to remain coherent:
+
+            {{pre_existing_context}}
             
             Here are parameters to consider for the JSON:
-
             - The language will be: {{lang}}.
             - The world id will be: {{world_id}}.
 
@@ -44,14 +47,15 @@ class PromptManager:
             n=n,
             world_name=world_name,
             lang=lang,
-            world_id=world_id
+            world_id=world_id,
+            pre_existing_context=pre_existing_context
         )
         generated_response = self.__base_model.invoke(formatted_prompt).content
         return generated_response
         
 # world_uid = str(uuid4())  
 # world_name = "Elysium"
-# n_lores = 10
+# n_lores = 3
 
 # prompt = PromptManager()
 # generated_response = prompt.initiate_lore(

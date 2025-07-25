@@ -2,14 +2,14 @@
 	"page_content": "string (short narrative paragraph in English or French depending on the language passed in argument)",
 	"metadata": {
 		"world_id": "string (uuid passed in argument)",
-		"type": "origin_myth | magic_system | religion | prophecy | timeline_event | ...",
+		"type": "origin_myth | magic_system | religion | prophecy | timeline_event",
 		"title": "string (title of the lore entry)",
 		"theme": "string (main narrative or conceptual theme, e.g. 'cosmology', 'faith', 'magic')",
 		"importance": "major | minor | local",
-		"keywords": ["string", "string", "string"],
+		"keyword": "string",
 		"language": "'en' or 'fr' depending on the language passed in argument",
 		"world": "string (name of the world this lore is tied to)",
 		"region": "string (name of the in-world region or location this lore is tied to)",
-		"visible_in_game": "true | false (whether the player can access this directly)"
+		"visible_in_game": "boolean (whether the player can access this directly)"
 	}
 }

@@ -87,7 +87,19 @@ class ChromaManager:
 
         return retriever.invoke(input=query)
 
+    def query_by_world(self, world: str, collection_name: str):
+        collection = self.__instanciate_collection(collection_name)
+        query_result = collection.get(where={"world": world})
 
+        if not query_result["documents"]:
+            return None
+        
+        result_dict = {}
+        result_dict["world_id"] = query_result["metadatas"][0]["world_id"]
+        result_dict["context"] = "\n".join(query_result["documents"])
+
+        return result_dict
+    
 # Example usage
 # def save():
 #     newDocument_1 = Document(

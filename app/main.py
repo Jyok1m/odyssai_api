@@ -1,4 +1,4 @@
-from app.pipelines import query_pipeline, setup_pipeline
+from app.pipelines import query_pipeline, lore_pipeline
 
 if __name__ == "__main__":
     def invoke_pipeline(pipeline_type: str):
@@ -13,11 +13,12 @@ if __name__ == "__main__":
             })
             return result["speaker_file"]
         elif pipeline_type == "setup":
-            result = setup_pipeline.invoke({
+            result = lore_pipeline.invoke({
+                "collection_name": "lores",
                 "world_name": "Elyseïa",
                 "n_lores": 1
-            })
+            })            
             return result
         
-    invoke_result = invoke_pipeline("setup")
-    print(invoke_result)
+    result = invoke_pipeline("setup")
+    print(result)
