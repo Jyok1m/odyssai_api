@@ -1,7 +1,7 @@
 import os
 from langchain_core.runnables import RunnableLambda
 from app.modules import Recorder, Transcriber, Speaker
-from app.db.chroma_db import ChromaManager
+from app.db import ChromaManager
 
 def record_voice(data, *args, **kwargs): # argument à _ car RunnableLambda doit prendre un paramètre
     config = data
@@ -15,7 +15,7 @@ def record_voice(data, *args, **kwargs): # argument à _ car RunnableLambda doit
 
 def transcribe_audio(data, *args, **kwargs):
     config = data
-    transcriber = Transcriber()
+    transcriber = Transcriber(lang=config["language_code"][:2])
     transcription = transcriber.get_transcription(config["audio_path"])
     config["transcription_to_query"] = transcription
     return config
@@ -51,12 +51,10 @@ def voice_act_response(data, *args, **kwargs):
     return config
 
 
-main_pipeline = (
+query_pipeline = (
     RunnableLambda(record_voice)
     .pipe(RunnableLambda(transcribe_audio))
     .pipe(RunnableLambda(remove_tmp_file))
     .pipe(RunnableLambda(query_documents))
     .pipe(RunnableLambda(voice_act_response))
 )
-
-
