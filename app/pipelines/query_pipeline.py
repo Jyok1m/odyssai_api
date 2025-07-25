@@ -4,9 +4,7 @@ from app.modules import Recorder, Transcriber, Speaker
 from app.db import ChromaManager
 
 
-def record_voice(
-    data, **kwargs
-):  # argument à _ car RunnableLambda doit prendre un paramètre
+def record_voice(data, **kwargs):
     config = data
     recorder = Recorder()
     input("Press Enter to start recording...")
