@@ -3,7 +3,10 @@ from langchain_core.runnables import RunnableLambda
 from app.modules import Recorder, Transcriber, Speaker
 from app.db import ChromaManager
 
-def record_voice(data, **kwargs): # argument à _ car RunnableLambda doit prendre un paramètre
+
+def record_voice(
+    data, **kwargs
+):  # argument à _ car RunnableLambda doit prendre un paramètre
     config = data
     recorder = Recorder()
     input("Press Enter to start recording...")
@@ -13,6 +16,7 @@ def record_voice(data, **kwargs): # argument à _ car RunnableLambda doit prendr
     config["audio_path"] = audio_path
     return config
 
+
 def transcribe_audio(data, **kwargs):
     config = data
     transcriber = Transcriber(lang=config["language_code"][:2])
@@ -20,11 +24,13 @@ def transcribe_audio(data, **kwargs):
     config["transcription_to_query"] = transcription
     return config
 
+
 def remove_tmp_file(data, **kwargs):
     config = data
     os.remove(config["audio_path"])
     config.pop("audio_path")
     return config
+
 
 def query_documents(data, **kwargs):
     config = data
@@ -33,17 +39,18 @@ def query_documents(data, **kwargs):
         collection_name=config["collection_name"],
         query=config["transcription_to_query"],
         n_results=config["n_results"],
-        search_type=config["search_type"]
+        search_type=config["search_type"],
     )
     config["queried_texts"] = " ".join([doc.page_content for doc in results])
     return config
+
 
 def voice_act_response(data, **kwargs):
     config = data
     speaker = Speaker(
         credentials_path=config["credentials_path"],
         language_code=config["language_code"],
-        voice_name=config["voice_name"]
+        voice_name=config["voice_name"],
     )
     speaker_file = speaker.synthesize(text=config["queried_texts"])
     config["speaker_file"] = speaker_file

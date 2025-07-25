@@ -1,0 +1,15 @@
+{
+	"page_content": "string (short descriptive paragraph introducing the world)",
+	"metadata": {
+		"world_id": "string (uuid)",
+		"type": "world",
+		"name": "string (name of the world)",
+		"genre": "string (e.g. 'fantasy', 'sci-fi', 'dark fantasy')",
+		"technology_level": "string (e.g. 'medieval', 'steampunk', 'futuristic')",
+		"dominant_species": "string (e.g. 'humans', 'elves', 'androids')",
+		"governance": "string (e.g. 'monarchy', 'anarchy', 'federation')",
+		"magic_presence": "boolean (whether magic exists in the world)",
+		"language": "'en' or 'fr' depending on the language passed in argument",
+		"visible_in_game": "boolean (whether the player can access this world profile)"
+	}
+}

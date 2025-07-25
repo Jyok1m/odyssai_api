@@ -1,0 +1,18 @@
+{
+	"page_content": "string (brief narrative description of the character, including personality, notable background, or role in the world, written in English or French depending on the language argument)",
+	"metadata": {
+		"world_id": "string (uuid passed in argument)",
+		"type": "main_character | side_character | antagonist | mythical_figure | npc",
+		"name": "string (full name of the character)",
+		"role": "string (narrative role, e.g. 'sorcerer', 'village elder', 'wandering bard')",
+		"faction": "string (name of the group, guild, or kingdom the character belongs to)",
+		"alignment": "heroic | neutral | villainous",
+		"personality_traits": "string (comma-separated list of personality traits, e.g. 'loyal, impulsive, curious')",
+		"race": "string (fantasy race or species, e.g. 'elf', 'golem', 'human')",
+		"class": "string (character class or archetype, e.g. 'mage', 'warrior', 'oracle')",
+		"language": "'en' or 'fr' depending on the language passed in argument",
+		"world": "string (name of the world this character exists in)",
+		"region": "string (primary region or location the character is associated with)",
+		"visible_in_game": "boolean (whether this character is visible to the player in-game)"
+	}
+}

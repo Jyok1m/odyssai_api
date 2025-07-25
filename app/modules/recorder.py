@@ -68,7 +68,7 @@ class Recorder:
         print("Saving recorded audio...")
 
         audio_data = np.concatenate(self.__recording, axis=0)
-        
+
         self.output_path = f"{save_folder}/{uuid4()}.wav"
         write(self.output_path, self.__samplerate, audio_data)
 

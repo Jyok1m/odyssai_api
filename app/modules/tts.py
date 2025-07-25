@@ -9,7 +9,10 @@ class Speaker:
     """
 
     def __init__(
-        self, credentials_path="./secrets/google_tts.json", language_code="fr-FR", voice_name="fr-FR-Wavenet-D"
+        self,
+        credentials_path="./secrets/google_tts.json",
+        language_code="fr-FR",
+        voice_name="fr-FR-Wavenet-D",
     ):
         """
         Initializes the Speaker with the specified language code and voice name.

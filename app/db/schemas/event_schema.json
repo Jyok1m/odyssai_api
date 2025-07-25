@@ -1,0 +1,16 @@
+{
+	"page_content": "string (short narrative describing the event in the world’s history)",
+	"metadata": {
+		"world_id": "string (uuid passed in argument)",
+		"type": "timeline_event",
+		"title": "string (title of the event)",
+		"date": "string (e.g. 'Year 1345 AE', 'Cycle 7 - Eclipse Phase')",
+		"location": "string (region, city, or area where the event took place)",
+		"scope": "string (e.g. 'global', 'regional', 'local')",
+		"impact": "string (short sentence summarizing the significance of the event)",
+		"theme": "string (e.g. 'war', 'discovery', 'rebellion')",
+		"language": "'en' or 'fr' depending on the language passed in argument",
+		"visible_in_game": "boolean (whether this event is accessible to the player)",
+		"world": "string (name of the world this event is tied to)"
+	}
+}

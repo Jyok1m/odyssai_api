@@ -93,13 +93,14 @@ class ChromaManager:
 
         if not query_result["documents"]:
             return None
-        
+
         result_dict = {}
         result_dict["world_id"] = query_result["metadatas"][0]["world_id"]
         result_dict["context"] = "\n".join(query_result["documents"])
 
         return result_dict
-    
+
+
 # Example usage
 # def save():
 #     newDocument_1 = Document(

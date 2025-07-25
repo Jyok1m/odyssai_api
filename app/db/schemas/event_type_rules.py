@@ -4,19 +4,21 @@ from typing import Literal, Optional
 
 class Metadata(BaseModel):
     world_id: str
-    type: Literal[
-        "origin_myth", "magic_system", "religion", "prophecy", "timeline_event"
-    ]
+    type: Literal["timeline_event"]
     title: str
+    date: str
+    location: str
+    scope: str
+    impact: str
     theme: str
-    importance: Literal["major", "minor", "local"]
-    keyword: str
     language: Literal["en", "fr"]
-    region: Optional[str] = None
     visible_in_game: Optional[bool] = True
     world: Optional[str] = None
 
+    # class Config:
+    #     extra = "forbid"
 
-class LoreEntry(BaseModel):
+
+class EventEntry(BaseModel):
     page_content: str
     metadata: Metadata
