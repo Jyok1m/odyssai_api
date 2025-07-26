@@ -1,7 +1,6 @@
-from app.pipelines import query_pipeline, lore_pipeline
+from app.pipelines import query_pipeline, world_builder_pipeline, lore_builder_pipeline
 
 if __name__ == "__main__":
-
     def invoke_pipeline(pipeline_type: str):
         if pipeline_type == "query":
             result = query_pipeline.invoke(
@@ -15,11 +14,17 @@ if __name__ == "__main__":
                 }
             )
             return result["speaker_file"]
-        elif pipeline_type == "setup":
-            result = lore_pipeline.invoke(
-                {"collection_name": "lores", "world_name": "Elyseïa", "n_lores": 1}
+        elif pipeline_type == "world":
+            result = world_builder_pipeline.invoke(
+                {"world_name": "Elyseïa"}
             )
-            return result
+            return "Done"
+        elif pipeline_type == "lore":
+            result = lore_builder_pipeline.invoke(
+                {"world_name": "Elyseïa"}
+            )
+            return "Done"
 
-    result = invoke_pipeline("setup")
+    # result = invoke_pipeline("world")
+    result = invoke_pipeline("lore")
     print(result)

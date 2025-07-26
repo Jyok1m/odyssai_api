@@ -87,9 +87,9 @@ class ChromaManager:
 
         return retriever.invoke(input=query)
 
-    def query_by_world(self, world: str, collection_name: str):
+    def query_by_world_and_collection(self, world_name: str, collection_name: str):
         collection = self.__instanciate_collection(collection_name)
-        query_result = collection.get(where={"world": world})
+        query_result = collection.get(where={"world": world_name})
 
         if not query_result["documents"]:
             return None
