@@ -35,7 +35,7 @@ def generate_world(_, **kwargs):
 
 world_builder_pipeline = (
     RunnableLambda(generate_world)
-    .pipe(RunnableLambda(lambda x: validate_json(x, step="lore")))
+    .pipe(RunnableLambda(lambda x: validate_json(x, step="world")))
     .pipe(RunnableLambda(convert_json_array_to_documents))
     .pipe(
         RunnableLambda(lambda x: save_documents_to_chroma(x, collection_name="worlds"))
