@@ -27,11 +27,9 @@ def retrieve_world_context(_, **kwargs):
     )
 
     if not world_search:
-        print("coucou", data["world_name"])
         data["world_context"] = ""
         data["world_id"] = str(uuid4())
     else:
-        print("hello", data["world_name"])
         data["world_context"] = world_search["context"]
         data["world_id"] = world_search["world_id"]
 

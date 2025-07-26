@@ -112,33 +112,7 @@ class PromptManager:
 
         Return only a valid JSON array of {{n}} objects with no quotes around. Do not include any explanations, comments, or markdown formatting.
         """
-
-    # def initiate_world(self, world_id: str, world_name: str, lang="English"):
-    #     schema = Path(self.__world_schema).read_text(encoding="utf-8")
-    #     formatted_schema = schema.replace("{", "{{").replace("}", "}}")
-    #     template = f"""
-    #     You are a narrative generator for a procedural RPG game.
-    #     Your task is to generate 1 world entry for the world "{{world_name}}".
-
-    #     Here are parameters to consider for the JSON:
-    #     - The language will be: {{lang}}.
-    #     - The world id will be: {{world_id}}.
-
-    #     The entry must strictly follow this JSON structure:
-    #     {formatted_schema}
-
-    #     Return only a valid JSON array of 1 object with no quotes around. Do not include any explanations, comments, or markdown formatting.
-    #     """
-
-    #     prompt = PromptTemplate.from_template(template)
-    #     formatted_prompt = prompt.format(
-    #         world_name=world_name,
-    #         lang=lang,
-    #         world_id=world_id,
-    #     )
-    #     llm_json = self.__base_model.invoke(formatted_prompt).content
-    #     return llm_json
-
+    
     def initiate_build(
         self,
         world_id: str,
