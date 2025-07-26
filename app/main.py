@@ -30,7 +30,8 @@ if __name__ == "__main__":
             result = event_builder_pipeline.invoke({"world_name": world_name})
             return "Done"
 
-    result = invoke_pipeline("world", "Elysia")
+    # result = invoke_pipeline("world", "Elysia")
+    result = invoke_pipeline("world", "Avros")
     # result = invoke_pipeline("lore", "Elysia")
     # result = invoke_pipeline("event", "Elysia")
     print(result)
