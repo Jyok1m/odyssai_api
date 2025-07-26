@@ -11,6 +11,7 @@ MAX_TOTAL_TOKENS = 60_000
 RESERVED_FOR_OUTPUT = 10_000
 MAX_INPUT_TOKENS = MAX_TOTAL_TOKENS - RESERVED_FOR_OUTPUT
 
+
 class PromptManager:
     def __init__(self, llm_model="gpt-4o", temperature=0.7, streaming=False):
         if not os.getenv("OPENAI_API_KEY"):
@@ -23,7 +24,9 @@ class PromptManager:
             streaming=streaming,
             max_retries=2,
         )
+        self.__world_schema = "app/db/schemas/world_schema.json"
         self.__lore_schema = "app/db/schemas/lore_schema.json"
+        self.__event_schema = "app/db/schemas/event_schema.json"
 
     def __count_tokens(self, text: str) -> int:
         enc = tiktoken.encoding_for_model(self.__model_name)
@@ -55,21 +58,21 @@ class PromptManager:
         return ctxs
 
     def initiate_world(self, world_id: str, world_name: str, lang="English"):
-        schema = Path(self.__lore_schema).read_text(encoding="utf-8")
+        schema = Path(self.__world_schema).read_text(encoding="utf-8")
         formatted_schema = schema.replace("{", "{{").replace("}", "}}")
         template = f"""
-            You are a narrative generator for a procedural RPG game.
-            Your task is to generate 1 entry for the world "{{world_name}}".
-            
-            Here are parameters to consider for the JSON:
-            - The language will be: {{lang}}.
-            - The world id will be: {{world_id}}.
+        You are a narrative generator for a procedural RPG game.
+        Your task is to generate 1 world entry for the world "{{world_name}}".
 
-            The entry must follow this exact JSON structure:
-            {formatted_schema}
+        Here are parameters to consider for the JSON:
+        - The language will be: {{lang}}.
+        - The world id will be: {{world_id}}.
 
-            Respond with a array of 1 JSON object, with no quotes around. Nothing else.
-            """
+        The entry must strictly follow this JSON structure:
+        {formatted_schema}
+
+        Return only a valid JSON array of 1 object with no quotes around. Do not include any explanations, comments, or markdown formatting.
+        """
 
         prompt = PromptTemplate.from_template(template)
         formatted_prompt = prompt.format(
@@ -89,41 +92,38 @@ class PromptManager:
         lore_context: str,
         lang="English",
     ):
-        world_context, lore_context = self.__sanitize_contexts(world_context, lore_context)
+        world_context, lore_context = self.__sanitize_contexts(
+            world_context, lore_context
+        )
 
         schema = Path(self.__lore_schema).read_text(encoding="utf-8")
         formatted_schema = schema.replace("{", "{{").replace("}", "}}")
         template = f"""
-            You are a narrative generator for a procedural RPG game.
-            Your task is to generate {{n}} lore entries for the world "{{world_name}}".
+        You are a narrative generator for a procedural RPG game.
+        Your task is to generate {{n}} world lore entries for the world "{{world_name}}".
+        Each event must be narratively consistent with the established lore and world contexts. 
+        Avoid redundancy, and ensure each entry contributes to meaningful story development.
 
-            Here is the world context :
+        Below are excerpts of previously generated content. Use them to remain coherent. If any section is empty, start fresh:
 
-            --- START OF LORE CONTEXT ---
+        --- START OF WORLD CONTEXT ---
+        {{world_context}}
+        --- END OF WORLD CONTEXT ---
 
-            {{world_context}}
+        --- START OF LORE CONTEXT ---
+        {{lore_context}}
+        --- END OF LORE CONTEXT ---
 
-            --- END OF LORE CONTEXT ---
+        Here are parameters to consider for the JSON:
+        - The language will be: {{lang}}.
+        - The world id will be: {{world_id}}.
 
-            Here are pre-existing lore contexts that have been already generated. Take them into consideration to remain coherent. \
-            If none has been provided start fresh :
+        Each entry must strictly follow this JSON structure:
+        {formatted_schema}
 
-            --- START OF LORE CONTEXT ---
+        Return only a valid JSON array of {{n}} objects with no quotes around. Do not include any explanations, comments, or markdown formatting.
+        """
 
-            {{lore_context}}
-
-            --- END OF LORE CONTEXT ---
-            
-            Here are parameters to consider for the JSON:
-            - The language will be: {{lang}}.
-            - The world id will be: {{world_id}}.
-
-            Each entry must follow this exact JSON structure:
-            {formatted_schema}
-
-            Respond with a array of JSON objects, with no quotes around. Nothing else.
-            """
-        
         prompt = PromptTemplate.from_template(template)
         formatted_prompt = prompt.format(
             n=n,
@@ -135,7 +135,7 @@ class PromptManager:
         )
         llm_json = self.__base_model.invoke(formatted_prompt).content
         return llm_json
-    
+
     def initiate_events(
         self,
         world_id: str,
@@ -150,49 +150,38 @@ class PromptManager:
             world_context, lore_context, event_context
         )
 
-        schema = Path(self.__lore_schema).read_text(encoding="utf-8")
+        schema = Path(self.__event_schema).read_text(encoding="utf-8")
         formatted_schema = schema.replace("{", "{{").replace("}", "}}")
         template = f"""
-            You are a narrative generator for a procedural RPG game.
-            Your task is to generate {{n}} world event entries for the world "{{world_name}}".
-            The entries must be coherent with the lore and the world settings.
+        You are a narrative generator for a procedural RPG game.
+        Your task is to generate {{n}} world event entries for the world "{{world_name}}".
+        Each event must be narratively consistent with the established lore, event and world contexts. 
+        Avoid redundancy, and ensure each entry contributes to meaningful story development.
 
-            Here is the world context :
+        Below are excerpts of previously generated content. Use them to remain coherent. If any section is empty, start fresh:
 
-            --- START OF LORE CONTEXT ---
+        --- START OF WORLD CONTEXT ---
+        {{world_context}}
+        --- END OF WORLD CONTEXT ---
 
-            {{world_context}}
+        --- START OF LORE CONTEXT ---
+        {{lore_context}}
+        --- END OF LORE CONTEXT ---
 
-            --- END OF LORE CONTEXT ---
+        --- START OF EVENT CONTEXT ---
+        {{event_context}}
+        --- END OF EVENT CONTEXT ---
 
-            Here are pre-existing lore contexts that have been already generated. Take them into consideration to remain coherent. \
-            If none has been provided start fresh :
+        Here are parameters to consider for the JSON:
+        - The language will be: {{lang}}.
+        - The world id will be: {{world_id}}.
 
-            --- START OF LORE CONTEXT ---
+        Each entry must strictly follow this JSON structure:
+        {formatted_schema}
 
-            {{lore_context}}
+        Return only a valid JSON array of {{n}} objects with no quotes around. Do not include any explanations, comments, or markdown formatting.
+        """
 
-            --- END OF LORE CONTEXT ---
-
-            Here are pre-existing event contexts that have been already generated. Take them into consideration to remain coherent. \
-            If none has been provided start fresh :
-
-            --- START OF EVENT CONTEXT ---
-
-            {{event_context}}
-
-            --- END OF EVENT CONTEXT ---
-            
-            Here are parameters to consider for the JSON:
-            - The language will be: {{lang}}.
-            - The world id will be: {{world_id}}.
-
-            Each entry must follow this exact JSON structure:
-            {formatted_schema}
-
-            Respond with a array of JSON objects, with no quotes around. Nothing else.
-            """
-        
         prompt = PromptTemplate.from_template(template)
         formatted_prompt = prompt.format(
             n=n,
@@ -201,7 +190,7 @@ class PromptManager:
             world_id=world_id,
             lore_context=lore_context,
             world_context=world_context,
-            event_context=event_context
+            event_context=event_context,
         )
         llm_json = self.__base_model.invoke(formatted_prompt).content
         return llm_json

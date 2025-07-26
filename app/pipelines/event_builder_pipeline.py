@@ -1,21 +1,23 @@
-#type: ignore
-
 from langchain_core.runnables import RunnableLambda
 from app.modules import PromptManager
 from app.db import ChromaManager
-from app.pipelines import validate_json, convert_json_array_to_documents, save_documents_to_chroma
+from app.pipelines import (
+    validate_json,
+    convert_json_array_to_documents,
+    save_documents_to_chroma,
+)
 
 # ------------------------------------------------------------------ #
 #                        Retrieve the contexts                       #
 # ------------------------------------------------------------------ #
+
 
 def get_contexts(_, **kwargs):
     data = _
     chroma_manager = ChromaManager()
 
     world_search = chroma_manager.query_context_by_similarity(
-        world_name=data["world_name"],
-        collection_name="worlds"
+        world_name=data["world_name"], collection_name="worlds"
     )
 
     data["world_id"] = world_search["world_id"]
@@ -26,8 +28,7 @@ def get_contexts(_, **kwargs):
         data["world_context"] = world_search["context"]
 
     lore_search = chroma_manager.query_context_by_similarity(
-        world_name=data["world_name"],
-        collection_name="lores"
+        world_name=data["world_name"], collection_name="lores"
     )
 
     if not lore_search:
@@ -36,42 +37,47 @@ def get_contexts(_, **kwargs):
         data["lore_context"] = lore_search["context"]
 
     event_search = chroma_manager.query_context_by_similarity(
-        world_name=data["world_name"],
-        collection_name="events"
+        world_name=data["world_name"], collection_name="events"
     )
 
-    if not lore_search:
+    if not event_search:
         data["event_context"] = ""
     else:
-        data["event_context"] = lore_search["context"]
+        data["event_context"] = event_search["context"]
 
     return data
 
+
 # ------------------------------------------------------------------ #
-#                          Generate the lore                         #
+#                         Generate the events                        #
 # ------------------------------------------------------------------ #
 
-def generate_lore(_, **kwargs):
+
+def generate_events(_, **kwargs):
     data = _
     prompt = PromptManager()
 
-    llm_json = prompt.initiate_lore(
+    llm_json = prompt.initiate_events(
         world_id=data["world_id"],
         world_name=data["world_name"],
         world_context=data["world_context"],
         lore_context=data["lore_context"],
+        event_context=data["event_context"],
         n=5,
     )
 
     data["llm_json"] = llm_json
     return data
 
+
 # ---------------------------- PIPELINE ---------------------------- #
 
-lore_builder_pipeline = (
+event_builder_pipeline = (
     RunnableLambda(get_contexts)
-    .pipe(RunnableLambda(generate_lore))
-    .pipe(RunnableLambda(lambda x: validate_json(x, step="lore")))
+    .pipe(RunnableLambda(generate_events))
+    .pipe(RunnableLambda(lambda x: validate_json(x, step="event")))
     .pipe(RunnableLambda(convert_json_array_to_documents))
-    .pipe(RunnableLambda(lambda x: save_documents_to_chroma(x, collection_name="lores")))
+    .pipe(
+        RunnableLambda(lambda x: save_documents_to_chroma(x, collection_name="events"))
+    )
 )

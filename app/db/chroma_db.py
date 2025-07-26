@@ -87,15 +87,14 @@ class ChromaManager:
         )
 
         return retriever.invoke(input=query)
-    
-    def query_context_by_similarity(self, collection_name: str, world_name: str, k: int = 10):
+
+    def query_context_by_similarity(
+        self, collection_name: str, world_name: str, k: int = 10
+    ):
         collection = self.__instanciate_collection(collection_name)
-        retriever = collection.as_retriever(
-            search_type="mmr",
-            search_kwargs={"k": k}
-        )
+        retriever = collection.as_retriever(search_type="mmr", search_kwargs={"k": k})
         results = retriever.invoke(f"Important lore entries from world {world_name}")
         context = "\n".join([doc.page_content for doc in results])
         world_id = results[0].metadata["world_id"] if results else str(uuid4())
-        
+
         return {"world_id": world_id, "context": context}

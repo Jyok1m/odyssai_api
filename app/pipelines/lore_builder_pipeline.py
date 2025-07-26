@@ -1,21 +1,23 @@
-#type: ignore
-
 from langchain_core.runnables import RunnableLambda
 from app.modules import PromptManager
 from app.db import ChromaManager
-from app.pipelines import validate_json, convert_json_array_to_documents, save_documents_to_chroma
+from app.pipelines import (
+    validate_json,
+    convert_json_array_to_documents,
+    save_documents_to_chroma,
+)
 
 # ------------------------------------------------------------------ #
 #                        Retrieve the contexts                       #
 # ------------------------------------------------------------------ #
+
 
 def get_contexts(_, **kwargs):
     data = _
     chroma_manager = ChromaManager()
 
     world_search = chroma_manager.query_context_by_similarity(
-        world_name=data["world_name"],
-        collection_name="worlds"
+        world_name=data["world_name"], collection_name="worlds"
     )
 
     data["world_id"] = world_search["world_id"]
@@ -26,8 +28,7 @@ def get_contexts(_, **kwargs):
         data["world_context"] = world_search["context"]
 
     lore_search = chroma_manager.query_context_by_similarity(
-        world_name=data["world_name"],
-        collection_name="lores"
+        world_name=data["world_name"], collection_name="lores"
     )
 
     if not lore_search:
@@ -37,9 +38,11 @@ def get_contexts(_, **kwargs):
 
     return data
 
+
 # ------------------------------------------------------------------ #
 #                          Generate the lore                         #
 # ------------------------------------------------------------------ #
+
 
 def generate_lore(_, **kwargs):
     data = _
@@ -56,6 +59,7 @@ def generate_lore(_, **kwargs):
     data["llm_json"] = llm_json
     return data
 
+
 # ---------------------------- PIPELINE ---------------------------- #
 
 lore_builder_pipeline = (
@@ -63,5 +67,7 @@ lore_builder_pipeline = (
     .pipe(RunnableLambda(generate_lore))
     .pipe(RunnableLambda(lambda x: validate_json(x, step="lore")))
     .pipe(RunnableLambda(convert_json_array_to_documents))
-    .pipe(RunnableLambda(lambda x: save_documents_to_chroma(x, collection_name="lores")))
+    .pipe(
+        RunnableLambda(lambda x: save_documents_to_chroma(x, collection_name="lores"))
+    )
 )
