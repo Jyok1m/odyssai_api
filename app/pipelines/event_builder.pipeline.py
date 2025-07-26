@@ -35,6 +35,16 @@ def get_contexts(_, **kwargs):
     else:
         data["lore_context"] = lore_search["context"]
 
+    event_search = chroma_manager.query_context_by_similarity(
+        world_name=data["world_name"],
+        collection_name="events"
+    )
+
+    if not lore_search:
+        data["event_context"] = ""
+    else:
+        data["event_context"] = lore_search["context"]
+
     return data
 
 # ------------------------------------------------------------------ #

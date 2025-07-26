@@ -4,6 +4,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from dotenv import load_dotenv, find_dotenv
+from uuid import uuid4
 
 # Load env variables
 load_dotenv(find_dotenv())
@@ -78,7 +79,7 @@ class ChromaManager:
         search_kwargs: dict[str, int | float] = {"k": n_results}
 
         if search_type == "mmr":
-            search_kwargs["lambda_mult"] = 0.7  # Default à 0.7
+            search_kwargs["lambda_mult"] = 0.7
 
         collection = self.__instanciate_collection(collection_name)
         retriever = collection.as_retriever(
@@ -86,51 +87,15 @@ class ChromaManager:
         )
 
         return retriever.invoke(input=query)
-
-    def query_by_world_and_collection(self, world_name: str, collection_name: str):
+    
+    def query_context_by_similarity(self, collection_name: str, world_name: str, k: int = 10):
         collection = self.__instanciate_collection(collection_name)
-        query_result = collection.get(where={"world": world_name})
-
-        if not query_result["documents"]:
-            return None
-
-        result_dict = {}
-        result_dict["world_id"] = query_result["metadatas"][0]["world_id"]
-        result_dict["context"] = "\n".join(query_result["documents"])
-
-        return result_dict
-
-
-# Example usage
-# def save():
-#     newDocument_1 = Document(
-#         page_content="J'aime les pommes.",
-#         metadata={"tag": "nourriture", "lang": "français"}
-#     )
-
-#     newDocument_2 = Document(
-#         page_content="I love pears.",
-#         metadata={"tag": "nourriture", "lang": "anglais"}
-#     )
-
-#     doc_list = [newDocument_1, newDocument_2]
-
-#     chroma_manager = ChromaManager()
-#     chroma_manager.add_documents("test_collection", doc_list)
-
-#     return f"Documents added to collection 'test_collection': {len(doc_list)}"
-
-# def query():
-#     chroma_manager = ChromaManager()
-
-#     results = chroma_manager.query_documents(
-#         collection_name="test_collection",
-#         query="Quels fruits est-ce que j'aime ?",
-#         n_results=5,
-#         search_type="mmr"
-#     )
-
-#     return [doc.page_content for doc in results]
-
-# # print(save())
-# # print(query())
+        retriever = collection.as_retriever(
+            search_type="mmr",
+            search_kwargs={"k": k}
+        )
+        results = retriever.invoke(f"Important lore entries from world {world_name}")
+        context = "\n".join([doc.page_content for doc in results])
+        world_id = results[0].metadata["world_id"] if results else str(uuid4())
+        
+        return {"world_id": world_id, "context": context}
