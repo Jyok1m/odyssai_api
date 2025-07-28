@@ -10,5 +10,6 @@ from .query_pipeline import query_pipeline
 from .world_builder_pipelines import (
     world_builder_pipeline,
     lore_builder_pipeline,
-    event_builder_pipeline
+    event_builder_pipeline,
+    character_builder_pipeline
 )

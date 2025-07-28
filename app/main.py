@@ -3,6 +3,7 @@ from app.pipelines import (
     world_builder_pipeline,
     lore_builder_pipeline,
     event_builder_pipeline,
+    character_builder_pipeline
 )
 
 if __name__ == "__main__":
@@ -31,10 +32,14 @@ if __name__ == "__main__":
         elif pipeline_type == "event":
             result = event_builder_pipeline.invoke({"world_name": world_name})
             return "Done"
+        elif pipeline_type == "character":
+            result = character_builder_pipeline.invoke({"world_name": world_name})
+            return "Done"
 
     # print(invoke_pipeline("query", "Elysia"))
     # result = invoke_pipeline("world", "Elysia")
     # result = invoke_pipeline("world", "Avros")
     # result = invoke_pipeline("lore", "Elysia")
     # result = invoke_pipeline("event", "Elysia")
-    # print(result)
+    result = invoke_pipeline("character", "Elysia")
+    print(result)
