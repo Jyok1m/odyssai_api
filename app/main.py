@@ -1,10 +1,10 @@
 from app.pipelines import (
     query_pipeline,
-    world_creation_pipeline,
-    world_context_building_pipeline,
     world_creation_graph,
     world_context_building_graph,
 )
+
+from app.graphs import summarizer_graph
 
 if __name__ == "__main__":
 
@@ -31,5 +31,9 @@ if __name__ == "__main__":
         world_context_building_graph.invoke({"world_name": world_name})
         return f"Context built for world {world_name}"
 
-    function_call = build_context("Elysia")
-    print(function_call)
+    def summarize_current_world(world_name: str):
+        output = summarizer_graph.invoke({"world_name": world_name})  # type: ignore
+        print(output["summary_text"])
+        print(output["audio_path"])
+
+    summarize_current_world("Elysia")

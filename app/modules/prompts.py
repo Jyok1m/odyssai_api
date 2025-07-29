@@ -152,3 +152,67 @@ class PromptManager:
         )
         llm_json = self.__base_model.invoke(formatted_prompt).content
         return llm_json
+
+    def generate_narrative_summary_prompt(
+        self,
+        world_name: str,
+        world_context="",
+        lore_context="",
+        event_context="",
+        character_context="",
+        lang="English",
+    ):
+        """
+        Generates a narrative-style summary prompt synthesizing all context types for storytelling purposes.
+        """
+
+        # Sanitize and truncate if needed
+        world_context, lore_context, event_context, character_context = (
+            self.__sanitize_contexts(
+                world_context, lore_context, event_context, character_context
+            )
+        )
+
+        prompt_template = f"""
+        You are a narrative writer for a procedural role-playing game (RPG).
+        Your task is to create a cohesive and engaging narrative summary that describes the current state of the world "{{world_name}}".
+
+        Your summary should synthesize the following inputs:
+        - The overarching world and setting.
+        - The historical or mythological lore that shapes the world.
+        - Recent events that have occurred.
+        - Key characters, factions, or entities involved.
+
+        Write in an immersive, story-driven tone. Structure the text like a short narrative chapter or a world overview for a roleplay campaign journal.
+        Emphasize causal relationships, evolution of the world, and potential narrative tension points.
+
+        If any section is missing, adapt accordingly.
+
+        --- START OF WORLD CONTEXT ---
+        {world_context}
+        --- END OF WORLD CONTEXT ---
+
+        --- START OF LORE CONTEXT ---
+        {lore_context}
+        --- END OF LORE CONTEXT ---
+
+        --- START OF EVENT CONTEXT ---
+        {event_context}
+        --- END OF EVENT CONTEXT ---
+
+        --- START OF CHARACTER CONTEXT ---
+        {character_context}
+        --- END OF CHARACTER CONTEXT ---
+
+        The output must be in {{lang}} and should be approximately 2 to 4 paragraphs long.
+        Do not use markdown, JSON, or bullet points. This is pure narrative prose.
+        """
+
+        prompt = PromptTemplate.from_template(prompt_template)
+        formatted_prompt = prompt.format(
+            world_name=world_name,
+            lang=lang,
+        )
+
+        response = self.__base_model.invoke(formatted_prompt).content
+        return response

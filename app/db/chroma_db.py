@@ -94,7 +94,9 @@ class ChromaManager:
         collection = self.__instanciate_collection(collection_name)
 
         if step_type == "world" or collection_name == "worlds":
-            query_result = collection.get(where={"world": world_name})
+            
+            query_result = collection.get(where={"name": world_name})
+            print(f"[Chroma] 🔍 Querying collection '{query_result}'")
             if not query_result["documents"]:
                 return None
             else:
@@ -108,3 +110,28 @@ class ChromaManager:
         world_id = results[0].metadata["world_id"] if results else str(uuid4())
 
         return {"world_id": world_id, "context": context}
+
+    def query_all_contexts(self, world_name: str, k: int = 10) -> dict:
+        if not world_name or not isinstance(world_name, str):
+            raise TypeError("world_name must be a non-empty string.")
+
+        # World (must exist)
+        world_data = self.query_context_by_similarity(
+            "worlds", world_name, step_type="world"
+        )
+    
+        if not world_data:
+            raise ValueError(f"No world context found for '{world_name}'.")
+
+        # Lore, Event, Character (optional if empty)
+        lore_data = self.query_context_by_similarity("lores", world_name, k=k)
+        event_data = self.query_context_by_similarity("events", world_name, k=k)
+        char_data = self.query_context_by_similarity("characters", world_name, k=k)
+
+        return {
+            "world_id": world_data["world_id"],
+            "world_context": world_data.get("context", ""),
+            "lore_context": lore_data.get("context", "") if lore_data else "",
+            "event_context": event_data.get("context", "") if event_data else "",
+            "character_context": char_data.get("context", "") if char_data else "",
+        }
