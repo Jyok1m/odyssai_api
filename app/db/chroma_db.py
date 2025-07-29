@@ -94,9 +94,7 @@ class ChromaManager:
         collection = self.__instanciate_collection(collection_name)
 
         if step_type == "world" or collection_name == "worlds":
-            
             query_result = collection.get(where={"name": world_name})
-            print(f"[Chroma] 🔍 Querying collection '{query_result}'")
             if not query_result["documents"]:
                 return None
             else:
@@ -119,7 +117,7 @@ class ChromaManager:
         world_data = self.query_context_by_similarity(
             "worlds", world_name, step_type="world"
         )
-    
+
         if not world_data:
             raise ValueError(f"No world context found for '{world_name}'.")
 
