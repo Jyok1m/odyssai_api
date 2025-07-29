@@ -101,7 +101,7 @@ class ChromaManager:
                 world_id = query_result["metadatas"][0]["world_id"]
                 context = "\n".join(query_result["documents"])
                 return {"world_id": world_id, "context": context}
-        
+
         retriever = collection.as_retriever(search_type="mmr", search_kwargs={"k": k})
         results = retriever.invoke(f"Important lore entries from world {world_name}")
         context = "\n".join([doc.page_content for doc in results])

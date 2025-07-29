@@ -3,14 +3,8 @@ from app.pipelines import (
     world_builder_pipeline,
     lore_builder_pipeline,
     event_builder_pipeline,
-    character_builder_pipeline
-    )
-
-def repeat_pipeline(pipeline, times):
-    p = pipeline
-    for _ in range(times - 1):
-        p = p.pipe(pipeline)
-    return p
+    character_builder_pipeline,
+)
 
 world_creation_pipeline = (
     RunnableLambda(lambda x: world_builder_pipeline.invoke(x))

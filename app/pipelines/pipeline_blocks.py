@@ -11,6 +11,7 @@ from uuid import uuid4
 #                     Retrieve full world context                    #
 # ------------------------------------------------------------------ #
 
+
 def retrieve_world_context(_, **kwargs):
     data = _
 
@@ -21,9 +22,7 @@ def retrieve_world_context(_, **kwargs):
     # -------------------------- World context ------------------------- #
 
     world_search = chroma_manager.query_context_by_similarity(
-        world_name=data["world_name"], 
-        collection_name="worlds",
-        step_type=step_type
+        world_name=data["world_name"], collection_name="worlds", step_type=step_type
     )
 
     if not world_search:
@@ -36,9 +35,7 @@ def retrieve_world_context(_, **kwargs):
     # -------------------------- Lore context -------------------------- #
 
     lore_search = chroma_manager.query_context_by_similarity(
-        world_name=data["world_name"], 
-        collection_name="lores",
-        step_type=step_type
+        world_name=data["world_name"], collection_name="lores", step_type=step_type
     )
 
     if not lore_search:
@@ -49,9 +46,7 @@ def retrieve_world_context(_, **kwargs):
     # -------------------------- Event context ------------------------- #
 
     event_search = chroma_manager.query_context_by_similarity(
-        world_name=data["world_name"], 
-        collection_name="events",
-        step_type=step_type
+        world_name=data["world_name"], collection_name="events", step_type=step_type
     )
 
     if not event_search:
@@ -62,9 +57,7 @@ def retrieve_world_context(_, **kwargs):
     # ------------------------ Character context ----------------------- #
 
     character_search = chroma_manager.query_context_by_similarity(
-        world_name=data["world_name"], 
-        collection_name="characters",
-        step_type=step_type
+        world_name=data["world_name"], collection_name="characters", step_type=step_type
     )
 
     if not character_search:
@@ -74,13 +67,15 @@ def retrieve_world_context(_, **kwargs):
 
     return data
 
+
 # ------------------------------------------------------------------ #
 #            LLM-generate JSON documents based on context            #
 # ------------------------------------------------------------------ #
 
+
 def generate_new_entries(_, **kwargs):
     data = _
-    
+
     step_type = kwargs["step"]
     n_entries = kwargs["n_entries"]
 
@@ -94,15 +89,17 @@ def generate_new_entries(_, **kwargs):
         world_context=data["world_context"],
         lore_context=data["lore_context"],
         event_context=data["event_context"],
-        character_context=data["character_context"]
+        character_context=data["character_context"],
     )
 
     data["llm_json"] = llm_json
     return data
 
+
 # ------------------------------------------------------------------ #
 #                      Validate the json format                      #
 # ------------------------------------------------------------------ #
+
 
 def validate_json(_, **kwargs):
     data = _
@@ -134,9 +131,11 @@ def validate_json(_, **kwargs):
     data["llm_json"] = validated_json
     return data
 
+
 # ------------------------------------------------------------------ #
 #                         Convert to Document                        #
 # ------------------------------------------------------------------ #
+
 
 def convert_json_array_to_documents(_, **kwargs):
     data = _
@@ -150,9 +149,11 @@ def convert_json_array_to_documents(_, **kwargs):
     data["document_list"] = converted_docs
     return data
 
+
 # ------------------------------------------------------------------ #
 #                      Save documents to Chroma                      #
 # ------------------------------------------------------------------ #
+
 
 def save_documents_to_chroma(_, **kwargs):
     data = _

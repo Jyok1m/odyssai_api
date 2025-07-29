@@ -70,14 +70,14 @@ class PromptManager:
         return ""
 
     def __get_build_prompt_template(
-            self, 
-            formatted_schema: str,
-            step_type: str, 
-            world_context="", 
-            lore_context="", 
-            event_context="",
-            character_context=""
-        ):
+        self,
+        formatted_schema: str,
+        step_type: str,
+        world_context="",
+        lore_context="",
+        event_context="",
+        character_context="",
+    ):
         return f"""
         You are a narrative generator for a procedural RPG game.
         Your task is to generate {{n}} {step_type} entries for the world "{{world_name}}".
@@ -112,7 +112,7 @@ class PromptManager:
 
         Return only a valid JSON array of {{n}} objects with no quotes around. Do not include any explanations, comments, or markdown formatting.
         """
-    
+
     def initiate_build(
         self,
         world_id: str,
@@ -125,10 +125,12 @@ class PromptManager:
         character_context="",
         lang="English",
     ):
-        world_context, lore_context, event_context, character_context = self.__sanitize_contexts(
-            world_context, lore_context, event_context, character_context
+        world_context, lore_context, event_context, character_context = (
+            self.__sanitize_contexts(
+                world_context, lore_context, event_context, character_context
+            )
         )
-        
+
         schema_type = self.__get_schema_by_step_type(step_type)
         schema = Path(schema_type).read_text(encoding="utf-8")
         formatted_schema = schema.replace("{", "{{").replace("}", "}}")
@@ -139,7 +141,7 @@ class PromptManager:
             world_context=world_context,
             lore_context=lore_context,
             event_context=event_context,
-            character_context=character_context
+            character_context=character_context,
         )
         prompt = PromptTemplate.from_template(prompt_template)
         formatted_prompt = prompt.format(
