@@ -183,8 +183,8 @@ class PromptManager:
         - Recent events that have occurred.
         - Key characters, factions, or entities involved.
 
-        Write in an immersive, story-driven tone. Structure the text like a short narrative chapter or a world overview for a roleplay campaign journal.
-        Emphasize causal relationships, evolution of the world, and potential narrative tension points.
+        Write in an immersive, story-driven tone. Do not use complicated words. Structure the text like a short narrative introduction for a role-playing game.
+        Create a starting point for the player. Emphasize causal relationships, evolution of the world, and potential narrative tension points the player may be involved with during his playthrough.
 
         If any section is missing, adapt accordingly.
 
@@ -204,7 +204,7 @@ class PromptManager:
         {character_context}
         --- END OF CHARACTER CONTEXT ---
 
-        The output must be in {{lang}} and should be approximately 2 to 4 paragraphs long.
+        The output must be in {{lang}} and should be 2 to 4 paragraphs long.
         Do not use markdown, JSON, or bullet points. This is pure narrative prose.
         """
 
